@@ -82,15 +82,21 @@ else:
         # 初始化結果區塊
         R1_info = ""
         Rt_info = ""
+        R25_info = ""
         Vout_info = ""
         header = ""
 
         if R1_input is not None and T_input is not None:
+            # 已知 R1 + Tt → 求 R25
             R25, Rt, Vout = solve_R25(R1_input, T_input)
+            header = ""
             R1_calc = R1_input
         elif R25_input is not None and T_input is not None:
+            # 已知 R25 + Tt → 求 R1
             R1_calc, Rt, Vout = solve_R1(R25_input, T_input)
+            header = ""
         elif R25_input is not None and R1_input is not None:
+            # 已知 R25 + R1 → 求 Tt
             Tt, Rt, Vout = solve_Tt(R25_input, R1_input)
             header = f"目標溫度 ≈ {Tt:.2f} °C"
             R1_calc = R1_input
@@ -106,6 +112,11 @@ else:
         # 組合結果
         R1_info = f"R1 ≈ {R1_calc:.2f} Ω\nP_R1 ≈ {P_R1:.4f} W"
         Rt_info = f"熱敏電阻值 Rt ≈ {Rt:.2f} Ω\nP_熱敏電阻 ≈ {P_Rt:.4f} W"
+        # 計算 R25 顯示
+        if R1_input is not None and T_input is not None:
+            R25_info = f"計算得到 R25 ≈ {R25:.2f} Ω"
+        else:
+            R25_info = f"R25 ≈ {R25_input:.2f} Ω"
         Vout_info = f"臨界電壓 Vout ≈ {Vout:.3f} V"
 
         # 顯示結果
@@ -115,6 +126,8 @@ else:
             st.text(R1_info)
         with st.expander("熱敏電阻資訊"):
             st.text(Rt_info)
+        with st.expander("R25 計算結果"):
+            st.text(R25_info)
         st.text(Vout_info)
 
     except Exception as e:
